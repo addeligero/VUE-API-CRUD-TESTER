@@ -1,5 +1,7 @@
 <template>
-  <RegisterInput />
+  <v-container height="100vh" class="bg-teal-lighten-1" fluid>
+    <RegisterInput
+  /></v-container>
 </template>
 
 <script setup>
