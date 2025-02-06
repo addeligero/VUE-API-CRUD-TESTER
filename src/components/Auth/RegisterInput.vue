@@ -2,8 +2,11 @@
   <v-container fluid>
     <v-row class="justify-center mt-12">
       <v-card width="500px" elevation="8">
-        <v-card-title class="text-center">Register Here!</v-card-title>
-        <form>
+        <v-card-title class="text-center font-weight-bold"
+          >Register Here!</v-card-title
+        >
+
+        <form @submit.prevent="register">
           <v-text-field
             v-model="state.name"
             :counter="10"
@@ -23,15 +26,23 @@
             @input="v$.email.$touch"
           ></v-text-field>
 
-          <v-select
-            v-model="state.select"
-            :error-messages="v$.select.$errors.map((e) => e.$message)"
-            :items="items"
-            label="Item"
+          <v-text-field
+            v-model="state.password"
+            :error-messages="v$.password.$errors.map((e) => e.$message)"
+            label="Password"
             required
-            @blur="v$.select.$touch"
-            @change="v$.select.$touch"
-          ></v-select>
+            @blur="v$.password.$touch"
+            @input="v$.password.$touch"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="state.passwordconfirm"
+            :error-messages="v$.passwordconfirm.$errors.map((e) => e.$message)"
+            label="Password confirmation"
+            required
+            @blur="v$.passwordconfirm.$touch"
+            @input="v$.passwordconfirm.$touch"
+          ></v-text-field>
 
           <v-checkbox
             v-model="state.checkbox"
@@ -42,7 +53,8 @@
             @change="v$.checkbox.$touch"
           ></v-checkbox>
 
-          <v-btn class="me-4" @click="v$.$validate"> submit </v-btn>
+          <v-btn type="submit" color="primary"> Submit </v-btn>
+
           <v-btn @click="clear"> clear </v-btn>
         </form>
       </v-card>
@@ -53,12 +65,14 @@
 import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
+import axios from "axios";
 
 const initialState = {
   name: "",
   email: "",
-  select: null,
+  password: null,
   checkbox: null,
+  passwordconfirm: null,
 };
 
 const state = reactive({
@@ -70,13 +84,29 @@ const items = ["Item 1", "Item 2", "Item 3", "Item 4"];
 const rules = {
   name: { required },
   email: { required, email },
-  select: { required },
-  items: { required },
+  password: { required },
+  passwordconfirm: { required },
   checkbox: { required },
 };
 
 const v$ = useVuelidate(rules, state);
 
+//functions
+
+const register = async () => {
+  try {
+    const response = axios.post("http://127.0.0.1:8000/api/register", {
+      name: state.name,
+      email: state.email,
+      password: state.password,
+      password_confirmation: state.passwordconfirm,
+    });
+
+    console.log("sucksis");
+  } catch (error) {
+    alert("Registration failed: " + error.response.data.error || error.message);
+  }
+};
 function clear() {
   v$.value.$reset();
 
