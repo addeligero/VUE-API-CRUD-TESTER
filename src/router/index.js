@@ -25,16 +25,17 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 });
 
+// Navigation Guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!sessionStorage.getItem("token");
+  const isAuthenticated = !!localStorage.getItem("token");
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login"); // Redirect to login if not authenticated
-  } else if ((to.path === "/login" || to.path === "/") && isAuthenticated) {
+    next("/login");
+  } else if (!to.meta.requiresAuth && isAuthenticated && to.path !== "/home") {
     next("/home");
   } else {
     next();
