@@ -8,6 +8,14 @@
   >
     <template v-slot:title>
       <span class="font-weight-black">Welcome {{ name }} </span>
+      <v-file-input
+        label="Upload Image"
+        v-model="file"
+        accept="image/*"
+        show-size
+        prepend-icon="mdi-camera"
+      ></v-file-input>
+      <v-btn color="primary" @click="uploadImage">Upload</v-btn>
     </template>
 
     <v-card-text class="bg-surface-light pt-4">
@@ -23,8 +31,10 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
+const file = ref(null);
 const name = ref("");
 const token = localStorage.getItem("token");
+
 onMounted(async () => {
   try {
     const response = await axios.get("http://127.0.0.1:8000/api/user", {
@@ -37,6 +47,37 @@ onMounted(async () => {
     console.error("Error fetching user data:", error);
   }
 });
+
+// Upload Image
+const uploadImage = async () => {
+  if (!file.value) {
+    alert("Please select an image.");
+    return;
+  }
+
+  let formData = new FormData();
+  formData.append("image", file.value);
+
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/upload",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("Upload successful:", response.data);
+    alert("Image uploaded successfully!");
+  } catch (error) {
+    console.error("Upload failed:", error);
+    alert("Image upload failed!");
+  }
+};
+
 // Logout function
 const logout = async () => {
   try {
