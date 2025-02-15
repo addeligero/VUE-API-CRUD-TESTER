@@ -6,7 +6,7 @@
     width="400"
     elevation="8"
   >
-    <template v-slot:title>
+    <template v-slot:title v-if="!image">
       <span class="font-weight-black">Welcome {{ name }} </span>
       <v-file-input
         label="Upload Image"
@@ -15,8 +15,13 @@
         show-size
         prepend-icon="mdi-camera"
       ></v-file-input>
+
       <v-btn color="primary" @click="uploadImage">Upload</v-btn>
     </template>
+
+    <v-container class="d-flex justify-center w-25">
+      <v-img v-if="image" :src="image" class="border rounded-xl"></v-img>
+    </v-container>
 
     <v-card-text class="bg-surface-light pt-4">
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione
@@ -33,6 +38,7 @@ import axios from "axios";
 
 const file = ref(null);
 const name = ref("");
+const image = ref("");
 const token = localStorage.getItem("token");
 
 onMounted(async () => {
@@ -43,6 +49,8 @@ onMounted(async () => {
       },
     });
     name.value = response.data.name;
+    console.log(response.data);
+    image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
@@ -92,6 +100,7 @@ const logout = async () => {
     );
     localStorage.removeItem("token");
     window.location.href = "/login";
+    image.value = response.data.image;
   } catch (error) {
     console.error("Error logging out:", error);
   }
