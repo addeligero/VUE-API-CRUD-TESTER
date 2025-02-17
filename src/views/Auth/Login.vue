@@ -1,15 +1,6 @@
 <template>
   <v-container class="fill-height bg-teal-lighten-1" fluid>
-    <v-row justify="center" align="center">
-      <v-col cols="12" md="6">
-        <v-card elevation="8">
-          <v-card-title class="text-center">Login</v-card-title>
-          <v-card-text>
-            <LoginInput />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <LoginInput />
   </v-container>
 </template>
 

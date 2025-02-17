@@ -1,30 +1,35 @@
 <template>
-  <v-sheet class="mx-auto" width="300">
-    <v-form fast-fail @submit.prevent="login">
-      <v-text-field
-        v-model="email"
-        :rules="emailRules"
-        label="Email"
-        type="email"
-      ></v-text-field>
+  <v-card class="mx-auto" width="400" elevation="8">
+    <v-card-title class="headline text-center font-weight-bold"
+      >Login</v-card-title
+    >
+    <v-card-text>
+      <v-form fast-fail @submit.prevent="login">
+        <v-text-field
+          v-model="email"
+          :rules="emailRules"
+          label="Email"
+          type="email"
+        ></v-text-field>
 
-      <v-text-field
-        v-model="password"
-        :rules="passwordRules"
-        label="Password"
-        type="password"
-      ></v-text-field>
+        <v-text-field
+          v-model="password"
+          :rules="passwordRules"
+          label="Password"
+          type="password"
+        ></v-text-field>
 
-      <v-btn
-        class="mt-2"
-        type="submit"
-        block
-        :disabled="!email || !password || isSubmitting"
-      >
-        {{ isSubmitting ? "Logging in..." : "Submit" }}
-      </v-btn>
-    </v-form>
-  </v-sheet>
+        <v-btn
+          class="mt-2"
+          type="submit"
+          block
+          :disabled="!email || !password || isSubmitting"
+        >
+          {{ isSubmitting ? "Logging in..." : "Submit" }}
+        </v-btn>
+      </v-form>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
