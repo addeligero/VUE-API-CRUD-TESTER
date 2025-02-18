@@ -1,13 +1,20 @@
 <template>
-  <v-card
-    class="mx-auto"
-    prepend-icon="$vuetify"
-    subtitle="The #1 Vue UI Library"
-    width="400"
-    elevation="8"
-  >
-    <template v-slot:title v-if="!image">
-      <span class="font-weight-black">Welcome {{ name }} </span>
+  <v-card class="mx-auto my-5" width="600" elevation="8">
+    <v-card-title class="headline text-center font-weight-bold">
+      Welcome, {{ name }}
+    </v-card-title>
+
+    <v-container class="d-flex justify-center">
+      <v-img
+        v-if="image"
+        :src="image"
+        class="border rounded-xl"
+        max-width="200"
+        elevation="5"
+      ></v-img>
+    </v-container>
+
+    <v-container v-if="!image" class="text-center">
       <v-file-input
         label="Upload Image"
         v-model="file"
@@ -15,31 +22,59 @@
         show-size
         prepend-icon="mdi-camera"
       ></v-file-input>
-
       <v-btn color="primary" @click="uploadImage">Upload</v-btn>
-    </template>
-
-    <v-container class="d-flex justify-center w-25">
-      <v-img v-if="image" :src="image" class="border rounded-xl"></v-img>
     </v-container>
 
-    <v-card-text class="bg-surface-light pt-4">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione
-      debitis quis est labore voluptatibus! Eaque cupiditate minima, at placeat
-      totam, magni doloremque veniam neque porro libero rerum unde voluptatem!
+    <v-card class="mx-4 my-4" elevation="2">
+      <v-card-title class="font-weight-bold">Life Motto</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="motto" label="Life motto"></v-text-field>
+      </v-card-text>
+    </v-card>
+
+    <v-container v-if="Password" class="my-4">
+      <UpdatePass />
+    </v-container>
+
+    <v-card-text v-if="quote" class="bg-surface-light pt-4">
+      {{ motto }}
     </v-card-text>
-    <v-btn @click="logout"> Logout </v-btn>
+
+    <v-row class="my-4">
+      <v-col>
+        <v-btn color="error" @click="logout" block>
+          <v-icon left>mdi-logout</v-icon>
+          Logout
+        </v-btn>
+      </v-col>
+      <v-col class="text-right" v-if="!Password">
+        <v-btn color="primary" @click="showUpdatePass" block>
+          <v-icon left>mdi-lock-reset</v-icon>
+          Update Password
+        </v-btn>
+      </v-col>
+      <v-col class="text-right" v-if="Password === true">
+        <v-btn color="primary" @click="showUpdatePass" block>
+          <v-icon left>mdi-lock-reset</v-icon>
+          Close
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import UpdatePass from "../Auth/UpdatePass.vue";
 
 const file = ref(null);
 const name = ref("");
 const image = ref("");
+const motto = ref("");
 const token = localStorage.getItem("token");
+const Password = ref(false);
+const quote = ref(""); // Add this if you are using `quote` in the template
 
 onMounted(async () => {
   try {
@@ -49,12 +84,16 @@ onMounted(async () => {
       },
     });
     name.value = response.data.name;
-    console.log(response.data);
     image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
+    motto.value = response.data.motto;
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
 });
+
+const showUpdatePass = () => {
+  Password.value = !Password.value;
+};
 
 // Upload Image
 const uploadImage = async () => {
@@ -80,6 +119,7 @@ const uploadImage = async () => {
 
     console.log("Upload successful:", response.data);
     alert("Image uploaded successfully!");
+    image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
   } catch (error) {
     console.error("Upload failed:", error);
     alert("Image upload failed!");
@@ -100,7 +140,6 @@ const logout = async () => {
     );
     localStorage.removeItem("token");
     window.location.href = "/login";
-    image.value = response.data.image;
   } catch (error) {
     console.error("Error logging out:", error);
   }
