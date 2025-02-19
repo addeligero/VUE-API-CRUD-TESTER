@@ -70,7 +70,7 @@ import UpdatePass from "../Auth/UpdatePass.vue";
 
 const file = ref(null);
 const name = ref("");
-const image = ref("");
+const image = ref(null);
 const motto = ref("");
 const token = localStorage.getItem("token");
 const Password = ref(false);
@@ -84,8 +84,18 @@ onMounted(async () => {
       },
     });
     name.value = response.data.name;
-    image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
-    motto.value = response.data.motto;
+
+    const response1 = await axios.get(
+      "http://127.0.0.1:8000/api/check-user-image",
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response1.data.has_image === true)
+      image.value = `http://127.0.0.1:8000/storage/${response1.data.image}`;
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
@@ -111,7 +121,6 @@ const uploadImage = async () => {
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -119,7 +128,7 @@ const uploadImage = async () => {
 
     console.log("Upload successful:", response.data);
     alert("Image uploaded successfully!");
-    image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
+    image.value = `http://127.0.0.1:8000/storage/${response.data.path}`;
   } catch (error) {
     console.error("Upload failed:", error);
     alert("Image upload failed!");
