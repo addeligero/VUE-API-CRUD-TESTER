@@ -16,10 +16,12 @@ const vuetify = createVuetify({
   components,
   directives,
 });
+const pinia = createPinia();
 const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
 app.use(vuetify);
+app.use(pinia);
 
 app.mount("#app");
