@@ -22,7 +22,9 @@
         show-size
         prepend-icon="mdi-camera"
       ></v-file-input>
-      <v-btn color="primary" @click="uploadImage">Upload</v-btn>
+      <v-btn color="primary" @click="handleUploadImage" :loading="isLoading"
+        >Upload</v-btn
+      >
     </v-container>
 
     <v-card class="mx-4 my-4" elevation="2">
@@ -64,17 +66,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import UpdatePass from "../Auth/UpdatePass.vue";
+import { useCounterStore } from "@/stores/counter";
 
+const store = useCounterStore();
 const file = ref(null);
 const name = ref("");
-const image = ref(null);
 const motto = ref("");
 const token = localStorage.getItem("token");
 const Password = ref(false);
-const quote = ref(""); // Add this if you are using `quote` in the template
+const quote = ref("");
+
+const image = ref(store.image);
 
 onMounted(async () => {
   try {
@@ -85,54 +90,31 @@ onMounted(async () => {
     });
     name.value = response.data.name;
 
-    const response1 = await axios.get(
-      "http://127.0.0.1:8000/api/check-user-image",
-
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response1.data.has_image === true)
-      image.value = `http://127.0.0.1:8000/storage/${response1.data.image}`;
+    await store.findImage();
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
 });
 
+watch(
+  () => store.image,
+  (newImage) => {
+    image.value = newImage;
+    console.log("Updated Image URL:", newImage);
+  }
+);
+
 const showUpdatePass = () => {
   Password.value = !Password.value;
 };
 
-// Upload Image
-const uploadImage = async () => {
+// Handle Upload Image
+const handleUploadImage = async () => {
   if (!file.value) {
     alert("Please select an image.");
     return;
   }
-
-  let formData = new FormData();
-  formData.append("image", file.value);
-
-  try {
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/upload",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log("Upload successful:", response.data);
-    alert("Image uploaded successfully!");
-    image.value = `http://127.0.0.1:8000/storage/${response.data.path}`;
-  } catch (error) {
-    console.error("Upload failed:", error);
-    alert("Image upload failed!");
-  }
+  await store.uploadImage(file.value);
 };
 
 // Logout function

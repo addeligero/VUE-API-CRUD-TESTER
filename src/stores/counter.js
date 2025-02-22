@@ -1,17 +1,11 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
 export const useCounterStore = defineStore("counter", () => {
-  const count = ref(0);
-  const doubleCount = computed(() => count.value * 2);
-  const image = ref(null);
+  const image = ref("");
   const isLoading = ref(false);
-  const token = localStorage.getItem("token");
-
-  function increment() {
-    count.value++;
-  }
+  const token = ref(localStorage.getItem("token"));
 
   async function uploadImage(file) {
     if (!file) {
@@ -30,7 +24,7 @@ export const useCounterStore = defineStore("counter", () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
           },
         }
       );
@@ -38,7 +32,7 @@ export const useCounterStore = defineStore("counter", () => {
       console.log("Upload successful:", response.data);
       alert("Image uploaded successfully!");
 
-      image.value = `http://127.0.0.1:8000/storage/${response.data.path}`;
+      await findImage();
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Image upload failed!");
@@ -47,5 +41,25 @@ export const useCounterStore = defineStore("counter", () => {
     }
   }
 
-  return { count, doubleCount, increment, image, isLoading, uploadImage };
+  const findImage = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/check-user-image",
+        {
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        }
+      );
+
+      if (response.data.has_image) {
+        image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
+        console.log("Updated Image URL:", image.value);
+      }
+    } catch (error) {
+      console.error("Failed to find image:", error);
+    }
+  };
+
+  return { image, isLoading, uploadImage, findImage };
 });
