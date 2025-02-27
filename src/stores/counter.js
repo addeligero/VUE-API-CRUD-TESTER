@@ -6,6 +6,7 @@ export const useCounterStore = defineStore("counter", () => {
   const image = ref("");
   const isLoading = ref(false);
   const token = ref(localStorage.getItem("token"));
+  const motto = ref("");
 
   async function uploadImage(file) {
     if (!file) {
@@ -32,7 +33,7 @@ export const useCounterStore = defineStore("counter", () => {
       console.log("Upload successful:", response.data);
       alert("Image uploaded successfully!");
 
-      await findImage();
+      await findInfo();
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Image upload failed!");
@@ -41,10 +42,10 @@ export const useCounterStore = defineStore("counter", () => {
     }
   }
 
-  const findImage = async () => {
+  const findInfo = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/check-user-image",
+        "http://127.0.0.1:8000/api/check-user-uploaded",
         {
           headers: {
             Authorization: `Bearer ${token.value}`,
@@ -54,12 +55,14 @@ export const useCounterStore = defineStore("counter", () => {
 
       if (response.data.has_image) {
         image.value = `http://127.0.0.1:8000/storage/${response.data.image}`;
-        console.log("Updated Image URL:", image.value);
+      }
+      if (response.data.has_motto) {
+        motto.value = response.data.motto;
       }
     } catch (error) {
       console.error("Failed to find image:", error);
     }
   };
 
-  return { image, isLoading, uploadImage, findImage };
+  return { image, isLoading, uploadImage, findInfo, motto };
 });
