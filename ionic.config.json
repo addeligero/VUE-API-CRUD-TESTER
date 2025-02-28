@@ -1,0 +1,7 @@
+{
+  "name": "thesis-frontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
