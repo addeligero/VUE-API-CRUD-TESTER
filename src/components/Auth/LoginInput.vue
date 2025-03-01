@@ -27,6 +27,9 @@
         >
           {{ isSubmitting ? "Logging in..." : "Submit" }}
         </v-btn>
+        <router-link to="/" class="text-decoration-none">
+          <v-btn color="primary" class="mt-2" block> Register </v-btn>
+        </router-link>
       </v-form>
     </v-card-text>
   </v-card>
