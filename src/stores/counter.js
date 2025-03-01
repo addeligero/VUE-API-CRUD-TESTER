@@ -14,7 +14,7 @@ export const useCounterStore = defineStore("counter", () => {
       return;
     }
 
-    let formData = new FormData();
+    let ImageData = new FormData();
     formData.append("image", file);
 
     isLoading.value = true;
@@ -22,7 +22,7 @@ export const useCounterStore = defineStore("counter", () => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/upload",
-        formData,
+        ImageData,
         {
           headers: {
             Authorization: `Bearer ${token.value}`,
@@ -64,5 +64,22 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
-  return { image, isLoading, uploadImage, findInfo, motto };
+  const updateMotto = async (motto) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/uploadMotto",
+        {
+          motto,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update motto:", error);
+    }
+  };
+  return { image, isLoading, uploadImage, findInfo, motto, updateMotto };
 });

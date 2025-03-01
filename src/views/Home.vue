@@ -1,5 +1,5 @@
 <template>
-  <v-container class="d-flex justify-center align-center" height="100vh">
+  <v-container class="d-flex justify-center align-center" style="height: 100vh">
     <v-card class="mx-auto my-5" width="600" elevation="8">
       <v-card-title class="headline text-center font-weight-bold">
         Welcome, {{ name }}
@@ -31,10 +31,11 @@
         >
       </v-container>
 
-      <v-card v-if="!motto" class="mx-4 my-4" elevation="2">
+      <v-card v-if="showMottoForm" class="mx-4 my-4" elevation="2">
         <v-card-title class="font-weight-bold">Life Motto</v-card-title>
         <v-card-text>
           <v-text-field v-model="motto" label="Life motto"></v-text-field>
+          <v-btn @click="handleUpdateMotto">Submit</v-btn>
         </v-card-text>
       </v-card>
 
@@ -42,7 +43,10 @@
         <UpdatePass />
       </v-container>
 
-      <v-card-text v-if="motto" class="bg-surface-light pt-4">
+      <v-card-text
+        v-if="!showMottoForm && motto"
+        class="bg-surface-light pt-4 text-center font-weight-bold font-italic"
+      >
         {{ motto }}
       </v-card-text>
 
@@ -82,6 +86,7 @@ const name = ref("");
 const motto = ref(store.motto);
 const token = localStorage.getItem("token");
 const Password = ref(false);
+const showMottoForm = ref(true);
 
 const image = ref(store.image);
 
@@ -95,7 +100,8 @@ onMounted(async () => {
     name.value = response.data.name;
 
     await store.findInfo();
-    console.log(store.motto);
+    motto.value = store.motto;
+    showMottoForm.value = !store.motto;
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
@@ -116,6 +122,7 @@ watch(
     console.log("Updated Motto:", newMotto);
   }
 );
+
 const showUpdatePass = () => {
   Password.value = !Password.value;
 };
@@ -127,6 +134,17 @@ const handleUploadImage = async () => {
     return;
   }
   await store.uploadImage(file.value);
+};
+
+// Handle Update Motto
+const handleUpdateMotto = async () => {
+  if (!motto.value) {
+    alert("Please enter a motto.");
+    return;
+  }
+  console.log("Updating motto:", motto.value);
+  await store.updateMotto(motto.value);
+  showMottoForm.value = false;
 };
 
 // Logout function
