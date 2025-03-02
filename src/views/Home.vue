@@ -1,8 +1,8 @@
-<template>
+<template class="bg-gray-100">
   <v-container class="d-flex justify-center align-center" style="height: 100vh">
     <v-card class="mx-auto my-5" width="600" elevation="8">
       <v-card-title class="headline text-center font-weight-bold">
-        Welcome, {{ name }}
+        Welcome, {{ name }} pogi mo naman
       </v-card-title>
 
       <v-container class="d-flex justify-center">
