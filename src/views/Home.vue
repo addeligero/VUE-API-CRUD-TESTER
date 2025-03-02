@@ -39,7 +39,7 @@
         <v-card-title class="font-weight-bold">Life Motto</v-card-title>
         <v-card-text>
           <v-text-field v-model="motto" label="Life motto"></v-text-field>
-          <v-btn @click="handleUpdateMotto">Submit</v-btn>
+          <v-btn v-if="!motto" @click="handleUpdateMotto">Submit</v-btn>
         </v-card-text>
       </v-card>
 
@@ -53,8 +53,11 @@
       >
         {{ motto }}
       </v-card-text>
-      <v-btn @click="update" block>Update motto</v-btn>
-
+      <v-row>
+        <v-col class="d-flex justify-end">
+          <v-btn @click="update" class="justify-end">Update motto</v-btn>
+        </v-col>
+      </v-row>
       <v-row class="my-4">
         <v-col>
           <v-btn color="error" @click="logout" block>
