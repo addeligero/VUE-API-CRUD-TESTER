@@ -31,7 +31,11 @@
         >
       </v-container>
 
-      <v-card v-if="showMottoForm" class="mx-4 my-4" elevation="2">
+      <v-card
+        v-if="showMottoForm || wantUpdate"
+        class="mx-4 my-4"
+        elevation="2"
+      >
         <v-card-title class="font-weight-bold">Life Motto</v-card-title>
         <v-card-text>
           <v-text-field v-model="motto" label="Life motto"></v-text-field>
@@ -49,6 +53,7 @@
       >
         {{ motto }}
       </v-card-text>
+      <v-btn @click="update" block>Update motto</v-btn>
 
       <v-row class="my-4">
         <v-col>
@@ -87,6 +92,7 @@ const motto = ref(store.motto);
 const token = localStorage.getItem("token");
 const Password = ref(false);
 const showMottoForm = ref(true);
+const wantUpdate = ref(false);
 
 const image = ref(store.image);
 
@@ -127,6 +133,9 @@ const showUpdatePass = () => {
   Password.value = !Password.value;
 };
 
+const update = () => {
+  wantUpdate.value = !wantUpdate.value;
+};
 // Handle Upload Image
 const handleUploadImage = async () => {
   if (!file.value) {
